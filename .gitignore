@@ -2,5 +2,6 @@ _BACKUPS_
 _DOCs_
 node_modules
 uploads/*
+logs/*
 /config/default.json
 /config/firebase.json

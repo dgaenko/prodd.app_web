@@ -1,0 +1,40 @@
+<form class="steps step1 active">
+    <table class="w-100 h-100">
+        <tr class="h-1">
+            <td class="fw-bold fs-6">Content</td>
+            <td class="fst-italic chars" align="right"><span>0</span> chars</td>
+        </tr>
+        <tr>
+            <td class="h-100" colspan="2">
+                <textarea class="form-control h-100" name="content" placeholder="Edit/past this text box" required></textarea>
+            </td>
+        </tr>
+    </table>
+    <button class="hidden" type="submit">send</button>
+</form>
+
+<script>
+    $(() => {
+        const el = $("[name=content]");
+
+        function init() {
+            app.d('initStep1');
+            $(".step1").submit((e) => {
+                e.preventDefault();
+                new_page.showStep(new_page.cur_step + 1);
+            });
+        }
+
+        function showContentLength() {
+            const len = el.val().length;
+            $(".chars span").html(len);
+            $(".fast-checkout").prop('disabled', len === 0);
+            $(".summary .content span").html(len);
+            new_page.calc();
+        }
+
+        el.keyup(showContentLength);
+        showContentLength();
+        init();
+    });
+</script>

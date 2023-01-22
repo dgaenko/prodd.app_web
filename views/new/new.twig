@@ -1,0 +1,235 @@
+{% include '../menu.twig' %}
+{% set pages_count = 7 %}
+
+<link rel="stylesheet" href="css/libs/dropzone.min.css">
+<script src="js/libs/dropzone.min.js"></script>
+
+<style>
+    #body-pd {
+        height: calc(100% - var(--header-height));
+    }
+    .dropzone {
+        max-width: inherit;
+        /*border: 1px solid red;*/
+        border-radius: 5px;
+        height: 200px;
+        width: 100%;
+        overflow-y: scroll;
+    }
+    .summary span {
+        font-weight: bold;
+        color: red;
+    }
+</style>
+<div class="mt-5 pt-3 pt-lg-5 new h-100">
+    <table class="h-100 w-100">
+        <tr class="h-1">
+            <td colspan="2">
+                <h2>
+                    <a href="/main" class="p-1"><i class='bx bx-left-arrow-alt'></i></a>
+                    New order
+                </h2>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                {% for i in range(1, pages_count) %}
+                    {% include 'step'~i~'.twig' %}
+                {% endfor %}
+            </td>
+        </tr>
+        <tr class="h-1">
+            <td>
+                <button class="btn btn-sm btn-primary fast-checkout" disabled>FAST CHECKOUT</button>
+            </td>
+            <td class="total-cost pt-2 pb-4" align="right">
+                Total cost: €<span>0<span>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<script>
+    Dropzone.autoDiscover = false;
+    const new_page = $.extend(true, app, {
+        name: "new_page",
+        modal: null,
+        dropzones: {},
+
+        cur_step: 1,
+        pages_count: {{ pages_count }},
+        locked: false,
+
+        showButtons(show) {
+            this.d("showButtons", show);
+            const el = $(".buttons");
+            show ? el.removeClass("hidden") : el.addClass("hidden");
+        },
+
+        showStep(num) {
+            this.d("showStep", num);
+            if (this.locked) return;
+            const self = this;
+            this.cur_step = num;
+            $('.steps').removeClass('active');
+            $('.step' + num).addClass('active');
+            $("button.back").prop('disabled', num < 2);
+            $("button.next").prop('disabled', num > this.pages_count - 1);
+            num > this.pages_count - 1 ? $(".fast-checkout").hide() : $(".fast-checkout").show();
+            this.locked = true;
+            setTimeout(() => {
+                self.locked = false;
+            }, 300);
+        },
+
+        initDropzone(options = {}) {
+            this.d('initDropzone', options);
+
+            const selector = options['selector'] ?? "#dropzone";
+            const self = this;
+            const opts = {
+                maxFiles: options.maxFiles ?? 10,
+                parallelUploads: 2,
+                uploadMultiple: true,
+                addRemoveLinks: true,
+                acceptedFiles: options.valid_exts,
+                paramName: "file",
+                autoProcessQueue: false,
+                autoQueue: true,
+                maxFilesize: options.maxFilesize ?? 10,
+                url: this.api + "upload",
+                headers: {
+                    'x-auth-token': self.getToken()
+                },
+                init: function() {
+                    this.on("addedfile", (file) => {
+                        self.d("dropzone.addedfile", file);
+                        if (options['onfileschanged']) options['onfileschanged']();
+                    });
+                    this.on("removedfile", (file) => {
+                        self.d("dropzone.removedfile", file);
+                        if (options['onfileschanged']) options['onfileschanged']();
+                    });
+                    this.on("sending", (file, xhr, formData) => {
+                        self.d("dropzone.sending", file);
+                        if (this.params) {
+                            for (let param in this.params) {
+                                formData.append(param, this.params[param]);
+                            }
+                        }
+                    });
+                    this.on("complete", (file) => {
+                        self.d("dropzone.complete", file);
+                        if (this.getUploadingFiles().length === 0 && this.getQueuedFiles().length === 0) {
+                            console.log(options);
+                            console.log("END ", this.getQueuedFiles().length);
+                            this.removeAllFiles();
+                            if (options['oncomplete']) options['oncomplete']();
+                        } else {
+                            dropzone.processQueue();
+                        }
+                    });
+                    this.on("success", (file, response) => {
+                        self.d("dropzone.success", file, response);
+                    });
+                    this.on("error", (file, message) => {
+                        self.d("dropzone.error", file, message);
+                        //$(file.previewElement).addClass("dz-error").find('.dz-error-message').text(message);
+                        if (typeof(message) === 'object') {
+                            alert(file.name + ": " + message.message);
+                        } else {
+                            alert(file.name + ": " + message);
+                        }
+                        this.removeFile(file);
+                    });
+                }
+            }
+            const dropzone = new Dropzone(selector, opts);
+            this.dropzones[selector] = dropzone;
+        },
+
+        // установка доп параметров передаваемых вместе с загружаемым файлом
+        setDropzoneParams(selector, params) {
+            if (this.dropzones[selector]) {
+                this.dropzones[selector].params = params;
+            }
+        },
+
+        calc() {
+            this.d("calc");
+            const self = this;
+            const media_cnt = Object.keys(new_page.dropzones).length
+                ? new_page.dropzones['#dropzone'].files.length + new_page.dropzones['#dropzone1'].files.length
+                : 0;
+            const data = {
+                content: $(".step1 [name=content]").val(),
+                media: media_cnt,
+                delivery_id: $("[name=rb_delivery]:checked").val(),
+                style_id: $("[name=rb_style]:checked").val(),
+                format_id: $("[name=rb_format]:checked").val()
+            }
+            console.log(data);
+            this.post("order/calc", data,
+                (response) => {
+                    self.d(response);
+                    if (response.responseJSON.status === 'OK') {
+                        $(".total-cost span").html(response.responseJSON.cost);
+                    } else {
+                        console.log(response.responseJSON);
+                    }
+                },
+                (err) => {
+                    console.log(err);
+                }
+            );
+        },
+
+        startUploadFiles() {
+            this.d("startUploadFiles");
+            for (let el in this.dropzones) {
+                this.dropzones[el].processQueue();
+            }
+        },
+
+        init() {
+            this.d('init');
+            const self = this;
+
+            this.showButtons(1);
+            this.showStep(1);
+
+            $("button.back").click(() => {
+                if (self.cur_step > 1) {
+                    self.showStep(self.cur_step - 1);
+                }
+            });
+            $("button.next").click(() => {
+                if (self.cur_step < self.pages_count) {
+                    if (self.cur_step === 1) {
+                        $(".step1 [type=submit]").click();
+                    } else {
+                        self.showStep(self.cur_step + 1);
+                    }
+                }
+            });
+
+            $(".fast-checkout").click(() => {
+                self.showStep(self.pages_count);
+            });
+
+            $(".btn-upload").click(this.startUploadFiles);
+        }
+    });
+
+    function changeSummaryFiles() {
+        const cnt = Object.keys(new_page.dropzones).length
+            ? new_page.dropzones['#dropzone'].files.length + new_page.dropzones['#dropzone1'].files.length
+            : 0;
+        $(".summary .media span").html(cnt);
+        new_page.calc();
+    }
+
+    $(function(){
+        new_page.init();
+    });
+</script>

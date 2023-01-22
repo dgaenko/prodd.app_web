@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SshConfigs">
+    <configs>
+      <sshConfig host="tester17.cf" id="9b8cb930-3e0a-4938-89e1-232b5e4ab055" keyPath="C:\Users\user\.ssh\ssh-key-2021-07-13.key" port="22" nameFormat="DESCRIPTIVE" username="root" />
+      <sshConfig authType="PASSWORD" host="149.28.204.195" id="0e6b4add-5c7a-48b3-b689-5b930d2252da" port="22" nameFormat="DESCRIPTIVE" username="root" />
+    </configs>
+  </component>
+</project>

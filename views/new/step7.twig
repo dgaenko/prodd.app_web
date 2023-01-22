@@ -1,0 +1,81 @@
+<div class="steps step7 mb-3">
+    <table class="h-100 w-100">
+        <tr>
+            <td>
+                <div class="mb-3 fw-bold fs-6 text-center">Summary</div>
+                <div class="d-flex justify-content-center">
+                    <div>
+
+                        <ul class="summary">
+                            <li class="content">Content: <span>0</span> chars</li>
+                            <li class="media">Photos or videos: <span>0</span></li>
+                            <li class="delivery">Delivery method: <span></span></li>
+                            <li class="style">Style: <span></span></li>
+                            <li class="format">Video format: <span></span></li>
+                        </ul>
+
+                        <div class="buttons text-center">
+                            <button class="btn btn-sm btn-primary btn-pay">Pay</button>
+                        </div>
+
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </table>
+
+</div>
+
+<script>
+    function uploadFilesCount() {
+        return new_page.dropzones['#dropzone'].files.length + new_page.dropzones['#dropzone1'].files.length;
+    }
+    function uploadFinished() {
+        app.d("uploadFinished");
+        if (!uploadFilesCount()) {
+            alert("Next - payment");
+            document.location.href = "/orders";
+        }
+    }
+    $(() => {
+        function startUpload(order_id) {
+            app.d("startUpload order_id:" + order_id);
+            new_page.setDropzoneParams('#dropzone', {
+                order_id: order_id,
+                type_id: 2
+            });
+            new_page.setDropzoneParams('#dropzone1', {
+                order_id: order_id,
+                type_id: 1
+            });
+            if (uploadFilesCount()) {
+                new_page.startUploadFiles();
+            } else {
+                uploadFinished();
+            }
+        }
+
+        $(".btn-pay").click(() => {
+            const data = {
+                content: $(".step1 [name=content]").val(),
+                delivery_id: $("[name=rb_delivery]:checked").val(),
+                style_id: $("[name=rb_style]:checked").val(),
+                format_id: $("[name=rb_format]:checked").val()
+            }
+            console.log(data);
+            app.post("order", data,
+                (response) => {
+                    console.log(response);
+                    if (response.responseJSON.status === "OK") {
+                        startUpload(response.responseJSON.order.order_id);
+                    } else {
+                        alert(response.responseJSON.message);
+                    }
+                },
+                (err) => {
+                    console.log(err);
+                }
+            );
+        });
+    });
+</script>

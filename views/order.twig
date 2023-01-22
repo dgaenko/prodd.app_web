@@ -1,0 +1,85 @@
+{% include 'menu.twig' %}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.css"/>
+<script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@4.0/dist/fancybox.umd.js"></script>
+
+<div class="mt-5 pt-3 pt-lg-5 pb-3 order">
+    {% if order %}
+        <div class="d-flex justify-content-between">
+            <h2>
+                <a href="/orders" class="p-1"><i class='bx bx-left-arrow-alt'></i></a>
+                Order #{{ order.order_id }}
+            </h2>
+            <div class="cost">€{{ order.cost }}</div>
+        </div>
+
+        <div class="mb-3">
+            <div class="fw-bold fs-6">Status</div>
+            <div>
+                {{ order.status.title }}
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <div class="d-flex justify-content-between">
+                <div class="fw-bold fs-6">Content</div>
+                <div class="fst-italic">{{ order.content|length }} chars</div>
+            </div>
+            <div>
+                {{ order.content }}
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-4">
+                <div class="fw-bold fs-6">Delivery</div>
+                <div>
+                    {{ order.delivery.title }}
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="fw-bold fs-6">Style</div>
+                <div>
+                    {{ order.style.title }}
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="fw-bold fs-6">Format</div>
+                <div>
+                    {{ order.format.title }}
+                </div>
+            </div>
+        </div>
+
+        {% if order.logo %}
+        <div class="mb-3">
+            <div class="fw-bold fs-6">Logo</div>
+            <div class="gallery">
+                <a data-src="{{ order.site }}{{ order.logo.src }}" data-fancybox="gallery">
+                    <img class="image" style="background-image: url({{ order.site }}{{ order.logo.src }})">
+                </a>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if order.media %}
+            <div class="fw-bold fs-6">Media</div>
+            <div class="gallery">
+                {% for media in order.media %}
+                    {% if media.type_id != 1 %}
+                    <a data-src="{{ order.site }}{{ media.src }}" data-fancybox="gallery">
+                        {% if media.ext in [ 'mp4', 'mpg', 'avi' ] %}
+                            <img class="play" style="background-image: url(img/play.png)">
+                        {% else %}
+                            <img class="image" style="background-image: url({{ order.site }}{{ media.src }})">
+                        {% endif %}
+                    </a>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}
+
+    {% else %}
+        <h2>Order not found</h2>
+    {% endif %}
+</div>

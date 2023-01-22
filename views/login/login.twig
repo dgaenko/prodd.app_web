@@ -1,0 +1,152 @@
+<script src="//accounts.google.com/gsi/client" async defer></script>
+<script src="//connect.facebook.net/en_US/sdk.js"></script>
+
+<script>
+    const GOOGLE_CLIENT_ID = "{{ GOOGLE_CLIENT_ID }}";
+    const FACEBOOK_APP_ID = "{{ FACEBOOK_APP_ID }}";
+
+    const login_page = $.extend(true, app, {
+        name: "login_page",
+        modal: null,
+
+        showAuthModal(mode) {
+            this.d('showAuthModal ' + mode);
+            const modal = $("#loginModal");
+            modal.find('[name=mode]').val(mode);
+            if (mode === 'login') {
+                modal.find(".name_block").hide();
+                modal.find(".modal-title").html('Login');
+            } else {
+                modal.find(".name_block").show();
+                modal.find(".modal-title").html('Registration');
+            }
+            $(".error-text").html("");
+            this.modal.show();
+        },
+
+        onLoginSubmit(e) {
+            e.preventDefault();
+            const self = this;
+            const data = this.serializeForm("#loginModal");
+            this.post(data.mode, data,
+                (xhr, statusText) => {
+                    console.log("SUCCESS", xhr, statusText);
+                    if (xhr.status === 200) {
+                        self.setToken(xhr.responseJSON.token);
+                        document.location.href = "/main";
+                    }
+                },
+                (xhr, statusText, err) => {
+                    console.log("ERROR", xhr, statusText, err);
+                    $(".error-text").html(xhr.responseJSON.message);
+                }
+            );
+        },
+
+        handleCredentialResponse(response) {
+            console.log("Encoded JWT ID token: " + response.credential);
+            $.post("/test", { id_token: response.credential }).done((response) => {
+                console.log(response);
+            });
+        },
+
+        initFirebaseGoogle() {
+            google.accounts.id.initialize({
+                client_id: GOOGLE_CLIENT_ID,
+                callback: this.handleCredentialResponse
+            });
+            google.accounts.id.renderButton(
+                document.getElementById("auth_google"),
+                { theme: "outline", size: "large" }
+            );
+            google.accounts.id.prompt();
+        },
+
+        checkLoginState(...args) {
+            console.log(args);
+        },
+
+        initFirebaseFacebook() {
+            FB.init({
+                appId: FACEBOOK_APP_ID,
+                status: true,
+                xfbml: true,
+                version: 'v2.6',
+                //version: 'v15.0'
+            });
+            //FB.AppEvents.logPageView();
+            FB.Event.subscribe('auth.authResponseChange', this.checkLoginState);
+        },
+
+        init() {
+            this.d('init');
+            const self = this;
+            this.modal = new bootstrap.Modal('#loginModal', { keyboard: false });
+            $(".login .btn").click((e) => {
+                self.showAuthModal($(e.target).attr('data-mode'));
+            });
+            $("#loginModal").submit(this.onLoginSubmit.bind(self));
+            this.initFirebaseGoogle();
+            this.initFirebaseFacebook();
+
+            $(".btn-danger").click(() => {
+                FB.login(function(response){
+                    console.log(response);
+                });
+            });
+        }
+    });
+    $(function(){
+        login_page.init();
+    });
+</script>
+
+<style>
+    .fb_button_label {
+        font-size: 12px !important;
+    }
+</style>
+
+<div class="position-relative h-100">
+    <header class="position-absolute top-0 start-50 translate-middle-x p-2">
+        Header
+    </header>
+
+    <section class="login h-100 d-flex align-items-center justify-content-center">
+        <div class="text-center">
+            <div class="d-inline-block">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="rbt_login" id="rbt_email" checked>
+                    <label class="form-check-label" for="rbt_email">
+                        E-mail
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="rbt_login" id="rbt_google">
+                    <label class="form-check-label" for="rbt_google">
+                        Google
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="rbt_login" id="rbt_fb">
+                    <label class="form-check-label" for="rbt_fb">
+                        Facebook
+                    </label>
+                </div>
+                <div>
+                    <div id="auth_google"></div>
+                    <fb:login-button data-auto-logout-link="true" scope="public_profile,email" size="large">Facebook</fb:login-button>
+                    {# <div class="fb-login-button" data-width="240" data-size="large" data-button-type="login_with" data-layout="default" data-auto-logout-link="true" data-use-continue-as="false"></div> #}
+                    <button class="btn btn-danger">FB test</button>
+                </div>
+            </div>
+            <div>
+                <button class="btn btn-primary mt-3 login_button" data-mode="login">Login</button>
+                <button class="btn btn-success mt-3 login_button" data-mode="register">Registration</button>
+            </div>
+        </div>
+    </section>
+    {% include '../footer.twig' %}
+</div>
+
+{% include 'modal.twig' %}

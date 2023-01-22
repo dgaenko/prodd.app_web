@@ -1,0 +1,4 @@
+﻿{   
+    "ignore": [ "views/app.js" ],
+    "ext": "js,json,twig,css,html,yaml"
+}

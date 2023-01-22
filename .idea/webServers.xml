@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="7a2c062b-9d3e-4d75-a059-28be666405cb" name="tester17.cf" url="http://zerro.ga">
+        <fileTransfer rootFolder="/home/apps/kwork" accessType="SFTP" host="tester17.cf" port="22" sshConfigId="9b8cb930-3e0a-4938-89e1-232b5e4ab055" sshConfig="root@tester17.cf:22 key" keyPair="true">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+      <webServer id="6486606d-6adf-493e-92d7-4941ccc1b92f" name="prodd.app" url="https://prodd.app">
+        <fileTransfer rootFolder="/home/apps/prodd.app" accessType="SFTP" host="149.28.204.195" port="22" sshConfigId="0e6b4add-5c7a-48b3-b689-5b930d2252da" sshConfig="root@149.28.204.195:22 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

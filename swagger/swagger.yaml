@@ -1,0 +1,836 @@
+openapi: 3.0.0
+info:
+  title: Dgtlone Api
+  version: 0.0.1 alpha
+  description: API проекта Dgtlone.
+    <div><i>Для приватных методов в заголовке необходимо передать параметр <b>x-auth-token</b> с токеном,
+    полученным после логина или регистрации.</i></div>
+    <div><i>Платформу устройства передавать вместе с данными запроса в заголовке параметром <b>x-platform</b></i>.</div>
+servers:
+  - url: https://ssilka.ga/api
+    description: Dgtlone Api
+
+components:
+
+  securitySchemes:
+    x-auth-token:
+      type: apiKey
+      description: API key to authorize requests. If you don't have an OpenWeatherMap API key, use `fd4698c940c6d1da602a70ac34f0b147`.
+      name: x-auth-token
+      in: header
+
+  responses:
+
+    success:
+      description: Выполнено успешно
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/success'
+
+    error:
+      description: Ошибка при выполнении запроса
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+
+    config:
+      description: Конфиг системы
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/success'
+            properties:
+              config:
+                type: object
+                properties:
+                  max_file_size_mb:
+                    type: number
+                    description: "Максимальный размер загружаемых файлов"
+                    example: 2
+
+
+    delivery:
+      description: Список delivery
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/delivery'
+
+    style:
+      description: Список styles
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/style'
+
+    format:
+      description: Список formats
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/format'
+
+    status:
+      description: Список статусов заказа
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/status'
+
+    media_types:
+      description: Список типов медаресурсов
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/media_types'
+
+    platforms:
+      description: Список платформ
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/platform'
+
+    login:
+      description: Успешная авторизация
+      content:
+        application/json:
+          schema:
+            properties:
+              x-auth-token:
+                type: string
+                example: "9b1132436410432dac31b715c4789e1e"
+            allOf:
+              - $ref: '#/components/schemas/success'
+
+    login_error:
+      description: Ошибка авторизации
+      content:
+        application/json:
+          schema:
+            properties:
+              message:
+                type: string
+                example: "Incorrect email or password"
+            oneOf:
+              - $ref: '#/components/schemas/error'
+
+    unauthorized:
+      description: Пользователь не авторизаован
+      content:
+        application/json:
+          schema:
+            properties:
+              message:
+                type: string
+                example: "Unauthorized"
+            oneOf:
+              - $ref: '#/components/schemas/error'
+
+    user:
+      description: Данные акканута пользователя
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/user'
+
+    order:
+      description: Создание заказа
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/success'
+              - $ref: '#/components/schemas/order_response'
+    order_data:
+      description: Возвращает информацио о заказе
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/success'
+            properties:
+              order:
+                $ref: '#/components/schemas/order_model'
+    order_cost:
+      description: Вычисление стоимости заказа
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/success'
+            properties:
+              cost:
+                type: number
+                example: 15
+
+    orders:
+      description: Список заказов
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/success'
+            properties:
+              orders:
+                type: array
+                items:
+                  $ref: "#/components/schemas/order_model"
+
+    order_media:
+      description: Список медиа заказа
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/success'
+              - $ref: '#/components/schemas/media_response'
+
+    upload:
+      description: Создание заказа
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/success'
+              - $ref: '#/components/schemas/upload_response'
+
+  schemas:
+    success:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "OK"
+    error:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "ERROR"
+        message:
+          type: string
+          example: "Error message details"
+
+    delivery:
+      allOf:
+        - $ref: '#/components/schemas/success'
+        - type: object
+          properties:
+            list:
+              type: array
+              items:
+                $ref: '#/components/schemas/delivery_model'
+    delivery_model:
+      type: object
+      properties:
+        delivery_id:
+          type: number
+          example: 1
+        title:
+          type: string
+          example: "FAST"
+
+    style:
+      allOf:
+        - $ref: '#/components/schemas/success'
+        - type: object
+          properties:
+            list:
+              type: array
+              items:
+                $ref: '#/components/schemas/style_model'
+    style_model:
+      type: object
+      properties:
+        style_id:
+          type: number
+          example: 1
+        title:
+          type: string
+          example: "Style #1"
+
+    format:
+      allOf:
+        - $ref: '#/components/schemas/success'
+        - type: object
+          properties:
+            list:
+              type: array
+              items:
+                $ref: '#/components/schemas/format_model'
+    format_model:
+      type: object
+      properties:
+        format_id:
+          type: number
+          example: 1
+        title:
+          type: string
+          example: "Vertical 9x16"
+
+    status:
+      allOf:
+        - $ref: '#/components/schemas/success'
+        - type: object
+          properties:
+            list:
+              type: array
+              items:
+                $ref: '#/components/schemas/status_model'
+    status_model:
+      type: object
+      properties:
+        status_id:
+          type: number
+          example: 1
+        title:
+          type: string
+          example: "pending"
+
+    media_types:
+      allOf:
+        - $ref: '#/components/schemas/success'
+        - type: object
+          properties:
+            list:
+              type: array
+              items:
+                $ref: '#/components/schemas/media_types_model'
+    media_types_model:
+      type: object
+      properties:
+        type_id:
+          type: number
+          example: 1
+        title:
+          type: string
+          example: "logo"
+
+    platform:
+      allOf:
+        - $ref: '#/components/schemas/success'
+        - type: object
+          properties:
+            list:
+              type: array
+              items:
+                $ref: '#/components/schemas/platform_model'
+    platform_model:
+      type: object
+      properties:
+        platform_id:
+          type: number
+          example: 1
+        title:
+          type: string
+          example: "android"
+
+    register:
+      allOf:
+        - $ref: '#/components/schemas/login'
+        - type: object
+          properties:
+            name:
+              type: string
+              description: Имя пользователя (ник)
+    login:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          description: E-mail для авторизация (макс. 255 знаков)
+          example: "user@google.com"
+        password:
+          type: string
+          description: Пароль (макс. 255 знаков)
+          example: "password"
+    user:
+      allOf:
+        - $ref: '#/components/schemas/success'
+        - type: object
+          properties:
+            user:
+              type: object
+              properties:
+                user_id:
+                  type: number
+                  example: 1
+                name:
+                  type: string
+                  example: Alex
+                email:
+                  type: string
+                  example: user@gmail.com
+
+    token:
+      type: object
+      required: [ token ]
+      properties:
+        token:
+          type: string
+          description: Firebase токен пользователя
+          example: "BizwbFsqOxkfkYHGFqZ6fuA88RKk6Fw"
+
+    order:
+      type: object
+      required: [ content, delivery_id, style_id, format_id ]
+      properties:
+        content:
+          type: string
+          description: Описание заказа
+          example: "Это описание заказа"
+        delivery_id:
+          type: number
+          description: ID вида delivery (см. GET `/dict/delivery`)
+          example: 1
+        style_id:
+          type: number
+          description: ID стиля (см. GET `/dict/style`)
+          example: 1
+        format_id:
+          type: number
+          description: ID формата (см. GET `/dict/format`)
+          example: 1
+    order_model:
+      type: object
+      properties:
+        order_id:
+          type: number
+          description: ID заказа
+          example: 1
+        content:
+          type: string
+          description: Описание заказа
+          example: "Это описание заказа"
+        cost:
+          type: number
+          description: Сумма заказа
+          example: 15.0
+        delivery_id:
+          type: number
+          description: ID вида delivery
+          example: 1
+        style_id:
+          type: number
+          description: ID стиля
+          example: 1
+        format_id:
+          type: number
+          description: ID формата
+          example: 1
+        created_dt:
+          type: string
+          description: Дата создания
+          example: 2023-01-14 01:42:41
+        changed_dt:
+          type: string
+          description: Дата изменения
+          example: 2023-01-14 01:42:41
+    order_response:
+      allOf:
+        - $ref: '#/components/schemas/success'
+        - type: object
+          properties:
+            order:
+              type: object
+              properties:
+                order_id:
+                  type: number
+                  description: ID созданного заказа
+                  example: 1
+
+
+    media_response:
+      allOf:
+        - $ref: '#/components/schemas/success'
+        - type: object
+          properties:
+            site:
+              type: string
+              description: Ссылка на сайт для формирования url медиа
+              example: "https://ssilka.ga/"
+            list:
+              type: array
+              items:
+                $ref: '#/components/schemas/media_model'
+    media_model:
+      type: object
+      properties:
+        media_id:
+          type: number
+          example: 1
+        order_id:
+          type: number
+          example: 1
+        type_id:
+          type: number
+          example: 1
+        src:
+          type: string
+          example: "uploads/1673853257267_image.jpg"
+
+    upload:
+      type: object
+      required: [ file, order_id, type_id ]
+      properties:
+        file:
+          type: string
+          format: binary
+        order_id:
+          type: number
+          description: ID заказа
+          example: 1
+        type_id:
+          type: number
+          description: ID типа загрузаемого ресурса (см. GET `/dict/media_types`)
+          example: 1
+    upload_response:
+      type: object
+      properties:
+        file:
+          type: array
+          items:
+            type: string
+            example: https://ssilka.ga/uploads/1673825193810_3ec7b8d6ac0bb915353cd2a6d125834a.jpg
+
+paths:
+  /:
+    get:
+      summary: Проверка API
+      x-swagger-router-controller: apiController
+      operationId: index
+      responses:
+        '200':
+          $ref: '#/components/responses/success'
+
+  /config:
+    get:
+      summary: Конфиг системы
+      x-swagger-router-controller: apiController
+      operationId: config
+      #security:
+      #  - x-auth-token: []
+      responses:
+        '200':
+          $ref: '#/components/responses/config'
+
+  /dict/delivery:
+    get:
+      tags:
+        - Dictionaries
+      summary: Список delivery
+      x-swagger-router-controller: apiController
+      operationId: dictionary
+      responses:
+        '200':
+          $ref: '#/components/responses/delivery'
+
+  /dict/style:
+    get:
+      tags:
+        - Dictionaries
+      summary: Список styles
+      x-swagger-router-controller: apiController
+      operationId: styles
+      responses:
+        '200':
+          $ref: '#/components/responses/style'
+
+  /dict/format:
+    get:
+      tags:
+        - Dictionaries
+      summary: Список formats
+      x-swagger-router-controller: apiController
+      operationId: formats
+      responses:
+        '200':
+          $ref: '#/components/responses/format'
+
+  /dict/status:
+    get:
+      tags:
+        - Dictionaries
+      summary: Список statuses
+      x-swagger-router-controller: apiController
+      operationId: statuses
+      responses:
+        '200':
+          $ref: '#/components/responses/status'
+
+  /dict/media_types:
+    get:
+      tags:
+        - Dictionaries
+      summary: Список типов медиаресурсов
+      x-swagger-router-controller: apiController
+      operationId: media_types
+      responses:
+        '200':
+          $ref: '#/components/responses/media_types'
+
+  /dict/platform:
+    get:
+      tags:
+        - Dictionaries
+      summary: Список платформ
+      x-swagger-router-controller: apiController
+      operationId: platforms
+      responses:
+        '200':
+          $ref: '#/components/responses/platforms'
+
+
+  /login:
+    post:
+      tags:
+        - User
+      summary: Авторизация пользователя
+      x-swagger-router-controller: ApiController
+      operationId: login
+      description: Авторизация пользователя
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+          #multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/login'
+        required: true
+
+      responses:
+        '200':
+          $ref: '#/components/responses/login'
+        '401':
+          $ref: '#/components/responses/login_error'
+        '400':
+          $ref: '#/components/responses/error'
+
+  /register:
+    post:
+      tags:
+        - User
+      summary: Регистрация пользователя
+      x-swagger-router-controller: ApiController
+      operationId: register
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            #multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/register'
+        required: true
+      responses:
+        '200':
+          $ref: '#/components/responses/login'
+        '400':
+          $ref: '#/components/responses/error'
+
+  /user:
+    get:
+      tags:
+        - User
+      summary: Информация об аккаунте пользователя
+      x-swagger-router-controller: apiController
+      operationId: user
+      security:
+        - x-auth-token: []
+      responses:
+        '200':
+          $ref: '#/components/responses/user'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+
+  /user/token:
+    patch:
+      tags:
+        - User
+      summary: Сохранение Firebase токена пользователя
+      x-swagger-router-controller: ApiController
+      operationId: userToken
+      security:
+        - x-auth-token: []
+      parameters:
+        - in: header
+          name: x-platform
+          schema:
+            type: string
+            example: 1
+          required: true
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/token'
+        required: true
+      responses:
+        '200':
+          $ref: '#/components/responses/success'
+        '401':
+          $ref: '#/components/responses/login_error'
+        '400':
+          $ref: '#/components/responses/error'
+
+
+  /order:
+    post:
+      tags:
+        - Order
+      summary: Создание заказа
+      x-swagger-router-controller: ApiController
+      operationId: order
+      security:
+        - x-auth-token: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/order'
+        required: true
+      responses:
+        '200':
+          $ref: '#/components/responses/order'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+
+  /order/calc:
+    post:
+      tags:
+        - Order
+      summary: Вычисление стоимости заказа
+      x-swagger-router-controller: ApiController
+      operationId: orderCalc
+      security:
+        - x-auth-token: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/order'
+        required: true
+      responses:
+        '200':
+          $ref: '#/components/responses/order_cost'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+
+  /order/{order_id}:
+    get:
+      tags:
+        - Order
+      summary: Возвращает информацию о заказе
+      x-swagger-router-controller: ApiController
+      operationId: orderData
+      security:
+        - x-auth-token: []
+      parameters:
+        - in: path
+          name: order_id
+          schema:
+            type: integer
+          required: true
+          description: ID заказа
+      responses:
+        '200':
+          $ref: '#/components/responses/order_data'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '400':
+          $ref: '#/components/responses/error'
+
+  /order/{order_id}/{status_id}:
+    patch:
+      tags:
+        - Order
+      summary: Изменение статуса заказа (только админ)
+      x-swagger-router-controller: ApiController
+      operationId: orderStatus
+      security:
+        - x-auth-token: []
+      parameters:
+        - in: path
+          name: order_id
+          schema:
+            type: integer
+          required: true
+          description: ID заказа
+        - in: path
+          name: status_id
+          schema:
+            type: integer
+          required: true
+          description: Статус заказа
+      responses:
+        '200':
+          $ref: '#/components/responses/success'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '400':
+          $ref: '#/components/responses/error'
+
+  /order/{order_id}/media:
+    get:
+      tags:
+        - Order
+      summary: Список медиа заказа
+      x-swagger-router-controller: ApiController
+      operationId: orderMedia
+      security:
+        - x-auth-token: []
+      parameters:
+        - in: path
+          name: order_id
+          schema:
+            type: integer
+          required: true
+          description: ID заказа
+      responses:
+        '200':
+          $ref: '#/components/responses/order_media'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '400':
+          $ref: '#/components/responses/error'
+
+  /orders:
+    get:
+      tags:
+        - Order
+      summary: Список заказов
+      x-swagger-router-controller: ApiController
+      operationId: orders
+      security:
+        - x-auth-token: []
+      responses:
+        '200':
+          $ref: '#/components/responses/orders'
+
+  /upload:
+    post:
+      tags:
+        - Order
+      summary: Загрузка изображений и медиафайлов к заказу
+      x-swagger-router-controller: ApiController
+      operationId: upload
+      security:
+        - x-auth-token: []
+      requestBody:
+        content:
+          #application/x-www-form-urlencoded:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/upload'
+        required: true
+      responses:
+        '200':
+          $ref: '#/components/responses/upload'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '400':
+          $ref: '#/components/responses/error'

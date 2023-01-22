@@ -1,0 +1,92 @@
+html, body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: #fff;
+    height: 100vh;
+    width: 100vw;
+}
+.loading .spinner-border {
+    width: 5em;
+    height: 5em;
+}
+
+.login .form-check {
+    text-align: left;
+}
+.login .btn {
+    width: 200px;
+}
+.buttons button {
+    width: 100px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.w-1 {
+    width: 1%;
+}
+.h-1 {
+    height: 1%;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.order .cost {
+    font-size: 2em;
+    font-weight: bold;
+    line-height: 0.9em;
+}
+
+.gallery {
+    display: flex;
+    flex-wrap: wrap;
+}
+.gallery a {
+    border: 1px solid #fff;
+    width: calc(33.3333% - 1px);
+    margin-right: 1px;
+    max-height: 80px;
+    height: 80px;
+    text-decoration: none;
+    cursor: pointer;
+}
+.gallery .image {
+    width: 100%;
+    height: 100%;
+    border: none !important;
+    border-radius: 3px;
+    /*object-fit: cover;*/
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+}
+
+.gallery .play {
+    width: 100%;
+    height: 100%;
+    border: none !important;
+    border-radius: 3px;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.steps {
+    display: none;
+    height: 100%;
+}
+.steps.active {
+    display: inline-table;
+    width: 100%;
+}

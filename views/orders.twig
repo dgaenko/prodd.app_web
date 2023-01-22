@@ -1,0 +1,53 @@
+{% include 'menu.twig' %}
+
+<div class="mt-5 pt-3 pt-lg-5">
+    <h2>
+        <a href="/main" class="p-1"><i class='bx bx-left-arrow-alt'></i></a>
+        List of orders
+    </h2>
+
+    <table class="table orders_list">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Item name</th>
+            <th scope="col">Status</th>
+            <th scope="col">Cost</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for key,order in orders %}
+        <tr data-id="{{ order.order_id }}" class="cursor-pointer">
+            <th scope="row">{{ key + 1 }}</th>
+            <td>id_{{ order.order_id }}_{{ order.created_dt|date('d.y.Y') }}</td>
+            <td>{{ statuses[order.status_id].title }}</td>
+            <td>€{{ order.cost }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+
+<script>
+    const orders_page = $.extend(true, app, {
+        name: "orders_page",
+        modal: null,
+
+        showOrder(order_id) {
+            this.d("showOrder", order_id);
+            document.location.href = '/order/' + order_id;
+        },
+
+        init() {
+            this.d('init');
+            const self = this;
+            $(".orders_list tr").click((e) => {
+                self.showOrder($(e.target.parentElement).attr('data-id'));
+            });
+        }
+    });
+    $(function(){
+        orders_page.init();
+    });
+</script>

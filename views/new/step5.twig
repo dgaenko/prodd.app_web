@@ -1,0 +1,37 @@
+<div class="steps step5 mb-3">
+    <table class="h-100 w-100">
+        <tr>
+            <td>
+                <div class="mb-3 fw-bold fs-6 text-center">Choose the style</div>
+                <div class="d-flex justify-content-center">
+                    <div>
+                        {% for key,item in dicts.style %}
+                            <div class="form-check mb-2">
+                                <input name="rb_style"
+                                       id="rb_style{{ item.style_id }}"
+                                       type="radio"
+                                       class="form-check-input"
+                                       value="{{ item.style_id }}"
+                                       {% if settings.defaults.style_id == item.style_id %}checked{% endif %}>
+                                <label class="form-check-label" for="rb_style{{ item.style_id }}">{{ item.title }}</label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<script>
+    $(() => {
+        function changeSummaryStyle() {
+            const val = $("[name=rb_style]:checked").val();
+            const text = $(`[for=rb_style${val}]`).html();
+            $(".summary .style span").html(text);
+            new_page.calc();
+        }
+        $("[name=rb_style]").change(changeSummaryStyle);
+        changeSummaryStyle();
+    });
+</script>

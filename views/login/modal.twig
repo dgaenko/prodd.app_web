@@ -1,0 +1,27 @@
+<form class="modal fade" id="loginModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-bottom-0">
+                <h5 class="modal-title">Login</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+
+                <input type="hidden" name="mode">
+                <div class="mb-3 name_block">
+                    <input type="text" class="form-control" name="name" placeholder="Name" maxlength="50">
+                </div>
+                <div class="mb-3">
+                    <input type="email" class="form-control" name="email" placeholder="E-mail" required maxlength="255">
+                </div>
+                <div class="">
+                    <input type="password" class="form-control" name="password" placeholder="Password" required maxlength="255">
+                </div>
+                <div class="form-text text-center text-danger error-text"></div>
+            </div>
+            <div class="modal-footer d-flex justify-content-center border-top-0">
+                <button type="submit" class="btn btn-primary flex-grow-1">Submit</button>
+            </div>
+        </div>
+    </div>
+</form>

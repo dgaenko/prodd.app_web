@@ -1,0 +1,18 @@
+{% include 'menu.twig' %}
+<div class="position-relative h-100">
+    <header class="position-absolute top-0 start-50 translate-middle-x p-2">
+        Header
+        <a href="#" onclick="app.logout()">logout</a>
+    </header>
+
+    <section class="login h-100 d-flex align-items-center justify-content-center">
+        <div class="text-center">
+            <div>
+                <a class="btn btn-primary mt-3 login_button" href="/new" data="new">Order new post</a>
+                <a class="btn btn-success mt-3 login_button" href="/orders" data="orders">My orders</a>
+            </div>
+        </div>
+    </section>
+
+    {% include 'footer.twig' %}
+</div>

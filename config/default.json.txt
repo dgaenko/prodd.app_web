@@ -1,0 +1,48 @@
+{
+
+  "version": "v0.0.1",
+
+  "server": {
+    "port": 3003
+  },
+
+  "keys": {
+    "session": "session_key"
+  },
+
+  "db": {
+    "host": "localhost",
+    "user": "-- USER --",
+    "password": "-- PASSWORD --",
+    "database": "-- DB_NAME --",
+    "port": 3306,
+    "log_results": false
+  },
+
+  "swagger": {
+    "route": "/swagger",
+    "file": "./swagger/swagger.yaml"
+  },
+
+  "log": {
+    "enabled": true,
+    "path": "logs/access.log"
+  },
+
+  "firebase": "../config/firebase.json",
+  "GOOGLE_CLIENT_ID": "-- GOOGLE_CLIENT_ID --",
+  "FACEBOOK_APP_ID": "-- FACEBOOK_APP_ID --",
+
+  "settings": {
+    "site_url": "https://prodd.app/",
+    "upload_dir": "uploads",
+    "max_file_size_mb": 2,
+    "valid_exts": ".jpg,.jpeg,.png,.avi,.mp4",
+    "defaults": {
+      "delivery_id": 2,
+      "style_id": 1,
+      "format_id": 1
+    }
+  }
+
+}
